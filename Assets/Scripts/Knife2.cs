@@ -26,7 +26,6 @@ public class Knife2 : MonoBehaviour
             rb.gravityScale = 1;
             GameController.instance.GameUI.DisplayKnifeCount2();
         }
-        //StartCoroutine(AIThrow());
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -52,16 +51,4 @@ public class Knife2 : MonoBehaviour
             GameController.instance.StartGameOverSequence2(false);
         }
     }
-
-    // private IEnumerator AIThrow()
-    // {
-    //     int waitTime = Random.Range(1, 10);
-    //     if (isActive)
-    //     {
-    //         rb.AddForce(throwForce, ForceMode2D.Impulse);
-    //         rb.gravityScale = 1;
-    //         GameController.instance.GameUI.DecrementDisplayedKnifeCount2();
-    //         yield return new WaitForSecondsRealtime(waitTime);
-    //     }
-    // }
 }

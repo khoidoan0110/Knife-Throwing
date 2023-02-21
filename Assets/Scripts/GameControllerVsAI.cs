@@ -57,6 +57,10 @@ public class GameControllerVsAI : MonoBehaviour
         {
             SpawnKnifeAI();
         }
+        else
+        {
+            StartGameOverSequenceAI(true);
+        }
     }
 
     private void SpawnKnife()

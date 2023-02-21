@@ -18,17 +18,17 @@ public class DifficultyMenu : MonoBehaviour
         if (sliderValue == 0)
         {
             difficultyText.text = "Easy";
-            PlayerPrefs.SetInt("Difficulty", 0);
+            PlayerPrefs.SetString("Difficulty", "Easy");
         }
         else if (sliderValue == 1)
         {
             difficultyText.text = "Normal";
-            PlayerPrefs.SetInt("Difficulty", 1);
+            PlayerPrefs.SetString("Difficulty", "Normal");
         }
         else
         {
             difficultyText.text = "Hard";
-            PlayerPrefs.SetInt("Difficulty", 2);
+            PlayerPrefs.SetString("Difficulty", "Hard");
         }
     }
 
