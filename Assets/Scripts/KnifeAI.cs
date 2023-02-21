@@ -11,7 +11,7 @@ public class KnifeAI : MonoBehaviour
 
     float nextThrow;
     private bool isActive = true;
-    private float waitTime;
+    private float cooldownTime;
 
     private Rigidbody2D rb;
     private BoxCollider2D knifeCollider;
@@ -28,13 +28,13 @@ public class KnifeAI : MonoBehaviour
         switch (diff)
         {
             case "Easy":
-                waitTime = 3f;
+                cooldownTime = 3f;
                 break;
             case "Normal":
-                waitTime = 2.5f;
+                cooldownTime = 2.5f;
                 break;
             case "Hard":
-                waitTime = 2f;
+                cooldownTime = 2f;
                 break;
         }
 
@@ -68,23 +68,30 @@ public class KnifeAI : MonoBehaviour
         }
     }
 
-    private IEnumerator FindLog()
+    private bool CanThrow()
     {
-        yield return new WaitForSecondsRealtime(waitTime);
+        bool result = false;
         float laserLength = 5f;
         RaycastHit2D hit = Physics2D.Raycast(firePoint.position, Vector2.down, laserLength);
         if (hit.collider != null)
         {
             if (hit.collider.tag == "Log")
             {
-                AIThrow();
+                result = true;
             }
-            else{
-                yield return new WaitForSecondsRealtime(0.1f);
-                AIThrow();
+            else
+            {
+                result = false;
             }
         }
+        return result;
+    }
 
+    private IEnumerator FindLog()
+    {
+        yield return new WaitForSecondsRealtime(cooldownTime);
+        yield return new WaitUntil(() => CanThrow() == true);
+        AIThrow();
     }
 
     void AIThrow()
