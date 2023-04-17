@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,21 +7,18 @@ public class GameController : MonoBehaviour
 {
     public static GameController instance { get; private set; }
 
-    [SerializeField]
-    private int knifeCount;
-
-    [SerializeField]
-    private int knifeCount2;
+    public int knifeCount;
 
     [Header("Knife Spawning")]
-    [SerializeField]
-    private Vector2 knifeSpawnPosition;
-    [SerializeField]
-    private Vector2 knifeSpawnPosition2;
-    [SerializeField]
-    private GameObject knifeObject;
-    [SerializeField]
-    private GameObject knifeObject2;
+    [SerializeField] private Vector2 knifeSpawnPosition;
+    [SerializeField] private GameObject knifeObject;
+
+    [Header("End Game Panel")]
+    [SerializeField] private GameObject congratsPanel;
+
+    [Header("Log Break")]
+    [SerializeField] private GameObject log;
+    [SerializeField] private GameObject logDestroy;
 
     public GameUI GameUI { get; private set; }
 
@@ -34,9 +30,13 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        GameUI.SetInitialDisplayedKnifeCount(knifeCount, knifeCount2);
+        if(MainMenu.selectedLevel == 1){
+            ScoreManager.score = 0;
+        }
+        log.gameObject.SetActive(true);
+        AudioManager.instance.PlayMusic("Background");
+        GameUI.SetInitialDisplayedKnifeCount(knifeCount);
         SpawnKnife();
-        SpawnKnife2();
     }
 
     public void OnSuccessfulKnifeHit()
@@ -51,28 +51,10 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void OnSuccessfulKnifeHit2()
-    {
-        if (knifeCount2 > 0)
-        {
-            SpawnKnife2();
-        }
-        else
-        {
-            StartGameOverSequence2(true);
-        }
-    }
-
     private void SpawnKnife()
     {
         knifeCount--;
         Instantiate(knifeObject, knifeSpawnPosition, Quaternion.identity);
-    }
-
-    private void SpawnKnife2()
-    {
-        knifeCount2--;
-        Instantiate(knifeObject2, knifeSpawnPosition2, Quaternion.Euler(0, 0, 180));
     }
 
     public void StartGameOverSequence(bool win)
@@ -80,54 +62,51 @@ public class GameController : MonoBehaviour
         StartCoroutine(GameOverSequenceCo(win));
     }
 
-    public void StartGameOverSequence2(bool win)
-    {
-        StartCoroutine(GameOverSequenceCo2(win));
-    }
-
     private IEnumerator GameOverSequenceCo(bool win)
     {
-        if (win)
+        if (win == true)
         {
+            GameObject destructible = Instantiate(logDestroy);
+            destructible.transform.position = log.transform.position;
+            log.gameObject.SetActive(false);
+
             yield return new WaitForSecondsRealtime(0.2f);
-            GameUI.ShowRedPanel();
-            yield return new WaitForSecondsRealtime(1.5f);
-            RestartGame();
+            AudioManager.instance.StopMusic();
+            AudioManager.instance.PlaySFX("Win", 1f);
+
+            //unlock next level
+            int currentLevel = MainMenu.selectedLevel;
+
+            yield return new WaitForSecondsRealtime(1.2f);
+            // go to next level
+            if (MainMenu.selectedLevel < 10)
+            {
+                MainMenu.selectedLevel = currentLevel + 1;
+                GameUI.ToNextLevel(currentLevel + 1);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
+            }
+            else{
+                congratsPanel.SetActive(true);
+                //yield return new WaitForSecondsRealtime(2f);
+                // congratsTxt.SetActive(false);
+                //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+            }
+
         }
-        else
+        else if (win == false)
         {
+            AudioManager.instance.StopMusic();
+            AudioManager.instance.PlaySFX("Lose", 1f);
+
+            yield return new WaitForSecondsRealtime(0.5f);
             GameUI.ShowRestartBtn();
-        }
-    }
-
-    private IEnumerator GameOverSequenceCo2(bool win)
-    {
-        if (win)
-        {
-            yield return new WaitForSecondsRealtime(0.2f);
-            GameUI.ShowBluePanel();
-            yield return new WaitForSecondsRealtime(1.5f);
-            RestartGame();
-        }
-        else
-        {
-            GameUI.ShowRestartBtn2();
-        }
-    }
-
-    private IEnumerator GameOverSequenceCoAI(bool win)
-    {
-        if (win)
-        {
-            yield return new WaitForSecondsRealtime(0.2f);
-            GameUI.ShowBluePanel();
-            yield return new WaitForSecondsRealtime(1.5f);
-            RestartGame();
         }
     }
 
     public void RestartGame()
     {
+        MainMenu.selectedLevel = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
     }
+
 }

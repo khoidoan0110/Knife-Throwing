@@ -3,71 +3,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameUI : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject restartBtn;
-    [SerializeField]
-    private GameObject restartBtn2;
-    [SerializeField]
-    private GameObject bluePanel;
-    [SerializeField]
-    private GameObject redPanel;
+    [SerializeField] private GameObject restartBtn;
+    [SerializeField] private TextMeshProUGUI levelTxt;
+    [SerializeField] private TextMeshProUGUI scoreTxt;
+    [SerializeField] private TextMeshProUGUI highscoreTxt;
+    [SerializeField] private TextMeshProUGUI scoreTxt2;
+    [SerializeField] private TextMeshProUGUI highscoreTxt2;
 
     [Header("Knife Count Display")]
     [SerializeField]
     private GameObject panelKnives;
     [SerializeField]
-    private GameObject panelKnives2;
-    [SerializeField]
-    private GameObject panelKnivesAI;
-    [SerializeField]
     private GameObject iconKnife;
     [SerializeField]
     private Color usedKnifeIconColor;
+
+    void Start()
+    {
+        int level = MainMenu.selectedLevel;
+        levelTxt.text = level.ToString();
+    }
+
+    void Update()
+    {
+        scoreTxt.text = ScoreManager.score.ToString();
+        highscoreTxt.text = ScoreManager.highScore.ToString();
+        scoreTxt2.text = ScoreManager.score.ToString();
+        highscoreTxt2.text = ScoreManager.highScore.ToString();
+    }
+
+    public void ToNextLevel(int level)
+    {
+        level = MainMenu.selectedLevel;
+        levelTxt.text = level.ToString();
+    }
 
     public void ShowRestartBtn()
     {
         restartBtn.SetActive(true);
     }
 
-    public void ShowRestartBtn2()
+    public void SetInitialDisplayedKnifeCount(int count)
     {
-        restartBtn2.SetActive(true);
-    }
-
-    public void ShowRedPanel()
-    {
-        redPanel.SetActive(true);
-    }
-
-    public void ShowBluePanel()
-    {
-        bluePanel.SetActive(true);
-    }
-
-    public void SetInitialDisplayedKnifeCount(int count1, int count2)
-    {
-        for (int i = 0; i < count1; i++)
+        for (int i = 0; i < count; i++)
         {
             Instantiate(iconKnife, panelKnives.transform);
-        }
-        for (int i = 0; i < count2; i++)
-        {
-            Instantiate(iconKnife, panelKnives2.transform);
-        }
-    }
-
-    public void SetInitialDisplayedKnifeCountAI(int count1, int countAI)
-    {
-        for (int i = 0; i < count1; i++)
-        {
-            Instantiate(iconKnife, panelKnives.transform);
-        }
-        for (int i = 0; i < countAI; i++)
-        {
-            Instantiate(iconKnife, panelKnivesAI.transform);
         }
     }
 
@@ -77,20 +61,10 @@ public class GameUI : MonoBehaviour
         panelKnives.transform.GetChild(knifeIconIndexToChange++).GetComponent<Image>().color = usedKnifeIconColor;
     }
 
-    private int knifeIconIndexToChange2 = 0;
-    public void DisplayKnifeCount2()
-    {
-        panelKnives2.transform.GetChild(knifeIconIndexToChange2++).GetComponent<Image>().color = usedKnifeIconColor;
-    }
-
-    private int knifeIconIndexToChangeAI = 0;
-    public void DisplayKnifeCountAI()
-    {
-        panelKnivesAI.transform.GetChild(knifeIconIndexToChangeAI++).GetComponent<Image>().color = usedKnifeIconColor;
-    }
-
     public void ReturnMainMenu()
     {
+        MainMenu.selectedLevel = 1;
         SceneManager.LoadScene(0);
     }
+
 }

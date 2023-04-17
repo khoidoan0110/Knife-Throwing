@@ -1,34 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    public GameObject diffCanvas, vsBotBtn, vsAIBtn, modeCanvas;
+    [SerializeField] private GameObject settingsPanel;
+    public static int selectedLevel = 1;
 
-    public void StartGamePlayer()
+    void Start(){
+        AudioManager.instance.PlayMusic("Background");
+    }
+
+    public void OpenSettings(){
+        Time.timeScale = 0;
+        settingsPanel.SetActive(true);
+    }
+
+    public void CloseSettings(){
+        Time.timeScale = 1;
+        settingsPanel.SetActive(false);
+    }
+
+    public void OpenScene()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Single);
+        AudioManager.instance.PlaySFX("Select", 1f);
+        SceneManager.LoadScene("GameplayScene");
     }
 
-    public void StartGameAI()
-    {
-        diffCanvas.SetActive(true);
-        vsBotBtn.SetActive(false);
-        vsAIBtn.SetActive(false);
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2, LoadSceneMode.Single);
+    public void QuitGame(){
+        Application.Quit();
     }
-
-    public void Back(){
-        modeCanvas.SetActive(true);
-        vsBotBtn.SetActive(true);
-        vsAIBtn.SetActive(true);
-        diffCanvas.SetActive(false);
-    }
-
-    // public void OpenDifficultySelection(){
-    //     diffCanvas.SetActive(true);
-    // }
 }
